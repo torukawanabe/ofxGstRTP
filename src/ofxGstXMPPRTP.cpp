@@ -59,9 +59,9 @@ void ofxGstXMPPRTP::setup(int clientLatency, bool enableEchoCancel){
 #if ENABLE_ECHO_CANCEL
 	if(enableEchoCancel){
 		echoCancel.setup();
-		server.setEchoCancel(echoCancel);
-		client.setEchoCancel(echoCancel);
-		server.setRTPClient(client);
+		server->setEchoCancel(echoCancel);
+        client->setEchoCancel(echoCancel);
+		server->setRTPClient(*client);
 	}
 #endif
 
