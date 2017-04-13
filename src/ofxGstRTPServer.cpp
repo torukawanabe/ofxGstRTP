@@ -221,9 +221,19 @@ void ofxGstRTPServer::addAudioChannel(int port, bool autotimestamp){
 			aelem = "pulsesrc stream-properties=\"props,media.role=phone,filter.want=echo-cancel\" name=audiocapture ";
 
 		#elif defined(TARGET_OSX)
-			// for osx we specify the output format since osxaudiosrc doesn't report the formats supported by the hw
-			// FIXME: we should detect the format somehow and set it automatically
-			aelem = "osxaudiosrc name=audiocapture ! audio/x-raw,rate=44100,channels=1 ";
+            string sampleRate = "44100";
+            ofSoundStream soundStream;
+            vector<ofSoundDevice> devices = soundStream.getDeviceList();
+            for (int i=0; i<devices.size(); i++) {
+                ofSoundDevice sd = devices[i];
+                if (sd.isDefaultInput && sd.sampleRates.size() > 0){
+                    sampleRate = ofToString(sd.sampleRates[0]);
+                    ofLogVerbose(LOG_NAME) << "audio input device:" << sd.name << ", sample rate:" << sampleRate;
+                    break;
+                }
+            }
+
+            aelem = "osxaudiosrc name=audiocapture ! audio/x-raw,rate=" + sampleRate  + ",channels=1 ";
 		#else
 			aelem = "autoaudiosrc name=audiocapture ! audio/x-raw,rate=44100,channels=1 ";
 		#endif
